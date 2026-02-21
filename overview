@@ -1,0 +1,48 @@
+# 🎉 Kids Online Quiz Application
+
+A fun and interactive quiz application for kids with music, videos, and images.
+
+## 🌟 Features
+
+- 🎨 Colorful kid-friendly UI
+- 🎵 Background music
+- 🎬 Educational video
+- 🧠 Quiz with scoring system
+- 📊 Result storage in MongoDB
+- 🌐 REST API backend
+
+## 🛠️ Tech Stack
+
+Frontend:
+- HTML
+- CSS
+- JavaScript
+
+Backend:
+- Node.js
+- Express.js
+- MongoDB
+
+## 🚀 Installation
+
+### 1. Clone Repository
+git clone https://github.com/your-username/kids-quiz-app.git
+
+### 2. Install Backend Dependencies
+cd backend
+npm install
+
+### 3. Run Server
+node server.js
+
+Server runs at:
+http://localhost:5000
+
+## 📸 Screenshots
+(Add screenshots here after uploading images)
+
+## 📌 Future Improvements
+- Login & Signup
+- Leaderboard
+- Timer
+- Admin dashboard
