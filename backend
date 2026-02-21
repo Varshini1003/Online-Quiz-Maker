@@ -1,0 +1,156 @@
+server.js
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+mongoose.connect("mongodb://127.0.0.1:27017/kidsQuizDB")
+.then(() => console.log("✅ MongoDB Connected"))
+.catch(err => console.log(err));
+
+const questionSchema = new mongoose.Schema({
+    question: String,
+    options: [String],
+    correctAnswer: Number
+});
+
+const Question = mongoose.model("Question", questionSchema);
+
+const resultSchema = new mongoose.Schema({
+    name: String,
+    score: Number,
+    total: Number,
+    date: { type: Date, default: Date.now }
+});
+
+const Result = mongoose.model("Result", resultSchema);
+
+app.get("/api/questions", async (req, res) => {
+    try {
+        const questions = await Question.find();
+        res.json(questions);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch questions" });
+    }
+});
+
+app.post("/api/submit", async (req, res) => {
+    try {
+        const { name, answers } = req.body;
+
+        const questions = await Question.find();
+        let score = 0;
+
+        questions.forEach((q, index) => {
+            if (answers[index] === q.correctAnswer) {
+                score++;
+            }
+        });
+
+        const newResult = new Result({
+            name,
+            score,
+            total: questions.length
+        });
+
+        await newResult.save();
+
+        res.json({
+            message: "🎉 Quiz submitted successfully!",
+            score,
+            total: questions.length
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: "Submission failed" });
+    }
+});
+
+app.get("/api/results", async (req, res) => {
+    try {
+        const results = await Result.find().sort({ score: -1 });
+        res.json(results);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch results" });
+    }
+});
+
+const PORT = 5000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
+
+seed.js
+
+const mongoose = require("mongoose");
+
+mongoose.connect("mongodb://127.0.0.1:27017/kidsQuizDB")
+.then(() => console.log("MongoDB Connected for Seeding"))
+.catch(err => console.log(err));
+
+const questionSchema = new mongoose.Schema({
+    question: String,
+    options: [String],
+    correctAnswer: Number
+});
+
+const Question = mongoose.model("Question", questionSchema);
+
+const questions = [
+    {
+        question: "Which animal says Woof?",
+        options: ["Cat", "Dog", "Cow"],
+        correctAnswer: 1
+    },
+    {
+        question: "Which one is a fruit?",
+        options: ["Carrot", "Apple", "Potato"],
+        correctAnswer: 1
+    },
+    {
+        question: "What color is the sky?",
+        options: ["Blue", "Green", "Red"],
+        correctAnswer: 0
+    }
+];
+
+Question.insertMany(questions)
+.then(() => {
+    console.log("✅ Sample Questions Inserted");
+    mongoose.connection.close();
+});
+
+package.json
+
+{
+  "name": "kids-quiz-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Kids Online Quiz Application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [
+    "quiz",
+    "kids",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
